@@ -27,7 +27,7 @@ Arv_bin * abb_cria(){
  * @param quantidade
  * @return
  */
-int * recebe_valores(int quantidade){
+int * cria_vetor(int quantidade){
     int cont1;
     int * vetor = new int[quantidade];
     for(cont1 = 0; cont1 < quantidade; cont1++){
@@ -87,6 +87,13 @@ void abb_imprime(Arv_bin * arv){
         entrada = aux;
         aux = new queue<Nodo *>;
     }
+    cout << saida->front()->info;
+    saida->pop();
+    while(!(saida->empty())){
+        cout << " " << saida->front()->info;
+        saida->pop();
+    }
+    cout << endl;
 }
 void arv_libera_no(Nodo * raiz){
     if(raiz!=NULL){
@@ -116,9 +123,9 @@ int main(){
         arv = abb_cria();
         cout << "Case " << cont1 << ":" << endl;
         cin >> quantidade;
-        entrada = recebe_valores(quantidade);
+        entrada = cria_vetor(quantidade);
         insere_valores(arv, entrada, quantidade);
-
+        abb_imprime(arv);
         cout << endl;
         delete entrada;
         arv_libera(arv);
