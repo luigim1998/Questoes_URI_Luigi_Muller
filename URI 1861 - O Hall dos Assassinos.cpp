@@ -4,7 +4,7 @@ using namespace std;
 
 typedef struct no{
     //string nome;
-    int quant;
+    int quant; //quant recebe -1 caos ele esteja morto
     struct no *esq;
     string nome;
     struct no *dir;
@@ -41,7 +41,7 @@ Nodo * insere_morto(Nodo *raiz, string nome){
     else if (nome.compare(raiz->nome) > 0)
         raiz->dir = insere_morto(raiz->dir, nome);
     else //nome.compare(raiz->nome) == 0
-        if(raiz->quant != -1)
+        if(raiz->quant != -1) //mata se não estiver morto
             raiz->quant = -1;
     return raiz;
 }
@@ -63,30 +63,9 @@ Nodo * insere_assassino(Nodo *raiz, string nome){
     else if (nome.compare(raiz->nome) > 0)
         raiz->dir = insere_assassino(raiz->dir, nome);
     else //nome.compare(raiz->nome) == 0
-        if(raiz->quant != -1)
+        if(raiz->quant != -1)//incrementa caso não esteja morto
             (raiz->quant)++;
     return raiz;
-}
-
-/**
- * Retorna true caso ele esteja vivo e false caso contrário.
- * @param raiz Nodo para pesquisa;
- * @param nome Nome para pesquisa;
- * @return Retorna true caso ele esteja vivo e false caso contrário.
- */
-bool esta_vivo(Nodo * raiz, string nome){
-    if(raiz == NULL)
-        return true;
-    else if (nome.compare(raiz->nome) < 0)
-        return esta_vivo(raiz->esq, nome);
-    else if (nome.compare(raiz->nome) > 0)
-        return esta_vivo(raiz->dir, nome);
-    else { //nome.compare(raiz->nome) == 0
-        if (raiz->quant == -1) //está morto
-            return false;
-        else
-            return true;
-    }
 }
 
  /**
@@ -96,10 +75,8 @@ bool esta_vivo(Nodo * raiz, string nome){
   * @param morto Nome do morto;
   */
 void abb_insere(Arv_bin *arv, string assassino, string morto){
-    if(esta_vivo(arv->raiz, assassino) && esta_vivo(arv->raiz, morto)){
         arv->raiz = insere_assassino(arv->raiz, assassino);
         arv->raiz = insere_morto(arv->raiz, morto);
-    }
 }
 
 /**
