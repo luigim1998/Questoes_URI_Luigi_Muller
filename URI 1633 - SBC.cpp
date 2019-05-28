@@ -18,25 +18,11 @@ typedef struct arvore{
 }ArvHeap;
 
 /**
- * Imprime o vetor com o caractere '|'.
- * @param A - ponteiro da árvore.
- *//*
-void print_heap(ArvHeap * A){
-    for(int cont = 0; cont < A->heap_size; cont++){
-        cout << A->vector[cont] << " ";
-    }
-    cout << "|";
-    for(int cont = A->heap_size; cont < A->lenght; cont++){
-        cout << A->vector[cont] << " ";
-    }
-    cout << endl;
-}*/
-
-/**
  * Função para manter a propriedade da heap.
  * @param A - Ponteiro da árvore;
  * @param indice - índice para atualizar.
  */
+
 void max_heapify(ArvHeap * A, int indice){
     int l = LEFT(indice);
     int r = RIGHT(indice);
@@ -77,6 +63,7 @@ void max_heapify(ArvHeap * A, int indice){
  * Deixa o vetor seguindo a propriedade da Heap Sort.
  * @param A - Ponteiro da árvore.
  */
+
 void build_max_heap(ArvHeap * A){
     A->heap_size = A->lenght;
     int aux;
@@ -89,6 +76,7 @@ void build_max_heap(ArvHeap * A){
  * Organiza o vetor utilizando o heapsort.
  * @param A - ponteiro da árvore.
  */
+
 void heapsort(ArvHeap * A){
     int i;
     Process aux;
@@ -109,7 +97,10 @@ int main(){
     int casos;
     int cont;
     int aux;
+    long int tempo_atual, atraso_total;
     while(cin >> casos){
+        tempo_atual = 1;
+        atraso_total = 0;
         arv->lenght    = casos;
         arv->heap_size = 0;
         for(cont = 0; cont < casos; cont++){
@@ -120,6 +111,9 @@ int main(){
         }
         build_max_heap(arv);
         heapsort(arv);
+        for(){
         
+        }
+        cout << tempo_atual << endl;
     }
 }
