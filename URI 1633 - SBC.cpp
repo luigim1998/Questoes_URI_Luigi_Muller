@@ -6,10 +6,15 @@ inline int LEFT(int i){ return 2*i + 1; }
 inline int RIGHT(int i){ return 2*i + 2; }
 inline int PARENT(int i){ return (i-1)/2; }
 
+typedef struct proc{
+    int requisicao;
+    int duracao;
+}Process;
+
 typedef struct arvore{
-    int lenght; //número de elementos no arranjo;
-    int heap_size;//número de elemento do heap que estão no arranjo;
-    int * vector;//vetor de valores;
+    int lenght;             //número de elementos no arranjo;
+    int heap_size;          //número de elemento do heap que estão no arranjo;
+    Process vector[100000]; //vetor de valores;
 }ArvHeap;
 
 /**
@@ -39,19 +44,29 @@ void max_heapify(ArvHeap * A, int indice){
     
     //se o filho a esquerda for maior que o pai
     if(l < A->heap_size){
-        if(A->vector[l] > A->vector[indice]){
+        if(A->vector[l].requisicao > A->vector[indice].requisicao){
             largest = l;
+        }//se forem iguais compara o tempo de duracao
+        else if(A->vector[l].requisicao == A->vector[indice].requisicao){
+            if(A->vector[l].duracao > A->vector[indice].duracao){
+                largest = l;
+            }
         }
     }
-    //se o filho a esquerda for maior que o maior
+    //se o filho a direita for maior que o maior
     if(r < A->heap_size){
-        if(A->vector[r] > A->vector[largest]){
+        if(A->vector[r].requisicao > A->vector[largest].requisicao){
             largest = r;
+        }//se forem iguais compara o tempo de duracao
+        else if(A->vector[r].requisicao == A->vector[largest].requisicao){
+            if(A->vector[r].duracao > A->vector[largest].duracao){
+                largest = r;
+            }
         }
     }
     if(largest != indice){
         //troca o maior
-        int aux = A->vector[indice];
+        Process aux = A->vector[indice];
         A->vector[indice] = A->vector[largest];
         A->vector[largest] = aux;
         max_heapify(A, largest);
@@ -75,8 +90,8 @@ void build_max_heap(ArvHeap * A){
  * @param A - ponteiro da árvore.
  */
 void heapsort(ArvHeap * A){
-    build_max_heap(A);
-    int i, aux;
+    int i;
+    Process aux;
     for(i = A->lenght - 1; i > 0; i--){
         //troca o maior que está em A[0] pelo último
         aux = A->vector[0];
@@ -89,131 +104,22 @@ void heapsort(ArvHeap * A){
     }
 }
 
-/**
- * Retorna o maior valor da heapsort.
- * @param A - ponteiro da árvore.
- * @return maior valor.
- */
-int maximum(ArvHeap * A){
-    return A->vector[0];
-}
-
-/**
- * Retorna o maior valor e remove o valor.
- * @param A - ponteiro da árvore.
- * @return maior valor.
- */
-int heap_extract_max(ArvHeap * A){
-    //se não tiver mais de um elemento então não é possível a remoção
-    if(A->heap_size < 1){
-        cout << "heap underflow" << endl;
-        return 0;
-    }
-    int max_num = A->vector[0];
-    A->vector[0] = A->vector[A->heap_size-1];
-    A->heap_size = A->heap_size - 1;
-    max_heapify(A, 0);
-    return max_num;
-}
-
-/**
- * Aumenta o valor da chave i caso o key seja maior.
- * @param A - ponteiro da árvore;
- * @param i - índice do vetor a ser promovido;
- * @param key - novo valor da chave.
- */
-void heap_increase_key(ArvHeap * A, int i, int key){
-    //caso key não seja maior
-    if(key < A->vector[i]){
-        cout << "new key is smaller than current key" << endl;
-        return;
-    }
-    A->vector[i] = key;
-    //promove o valor enquanto o pai for menor que ele
-    while(i > 0){
-        if(A->vector[PARENT(i)] < A->vector[i]){
-            int aux = A->vector[i];
-            A->vector[i] = A->vector[PARENT(i)];
-            A->vector[PARENT(i)] = aux;
-            i = PARENT(i);
-        } else {
-            break;
+int main(){
+    ArvHeap * arv = new ArvHeap;
+    int casos;
+    int cont;
+    int aux;
+    while(cin >> casos){
+        arv->lenght    = casos;
+        arv->heap_size = 0;
+        for(cont = 0; cont < casos; cont++){
+            cin >> aux;
+            arv->vector[cont].requisicao = aux;
+            cin >> aux;
+            arv->vector[cont].duracao = aux;
         }
+        build_max_heap(arv);
+        heapsort(arv);
+        
     }
-}
-
-/**
- * Insere o novo valor na heap.
- * @param A - ponteiro da árvore;
- * @param key - valor a ser inserido.
- */
-void max_heap_insert(ArvHeap * A, int key){
-    A->vector[A->heap_size] = INT_MIN;
-    heap_increase_key(A, A->heap_size, key);
-    A->heap_size = A->heap_size + 1;
-}
-
-/**
- * Retorna o menor valor da heapsort.
- * @param A - ponteiro da árvore.
- * @return menor valor.
- */
-int minimum(ArvHeap * A){
-    //executa o heapsort para organizar o vetor
-    heapsort(A);
-    int aux = A->vector[0];
-    build_max_heap(A);
-    return aux;
-}
-
-/**
- * Remove e retorna o menor inteiro.
- * @param A - ponteiro da árvore.
- * @return menor inteiro.
- */
-int heap_extract_min(ArvHeap * A){
-    //se não tiver mais de um elemento então não é possível a remoção
-    if(A->heap_size < 1){
-        cout << "heap underflow" << endl;
-        return 0;
-    }
-    //salva o número antes de ser modificados pela função heapsort e build_max_heap
-    int tamanho = A->heap_size - 1;
-    //executa o heapsort para pegar o menor número
-    heapsort(A);
-    int min_num = A->vector[0];
-    A->vector[0] = A->vector[A->heap_size-1];
-    A->heap_size = A->heap_size - 1;
-    //reconstrói a árvore
-    build_max_heap(A);
-    A->heap_size = tamanho;
-    return min_num;
-}
-
-/**
- * Diminui o valor da chave i caso o key seja menor.
- * @param A - ponteiro da árvore;
- * @param i - índice do vetor a ser rebaixado;
- * @param key - novo valor da chave.
- */
-void heap_decrease_key(ArvHeap * A, int i, int key){
-    //caso key não seja menor
-    if(key > A->vector[i]){
-        cout << "new key is smaller than current key" << endl;
-        return;
-    }
-    A->vector[i] = key;
-    //rebaixa o valor enquanto o pai for menor que ele
-    max_heapify(A, PARENT(i));
-}
-
-/**
- * Insere o novo valor na heap.
- * @param A - ponteiro da árvore;
- * @param key - valor a ser inserido.
- */
-void min_heap_insert(ArvHeap * A, int key){
-    A->heap_size = A->heap_size + 1;
-    A->vector[A->heap_size-1] = INT_MAX;
-    heap_decrease_key(A, A->heap_size-1, key);
 }
