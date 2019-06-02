@@ -95,15 +95,14 @@ void heapsort(ArvHeap * A){
 int main(){
     ArvHeap * arv = new ArvHeap;
     int casos;
-    int cont;
     int aux;
-    long int tempo_atual, atraso_total;
+    long long int tempo_atual, atraso_total;
     while(cin >> casos){
         tempo_atual = 1;
         atraso_total = 0;
         arv->lenght    = casos;
         arv->heap_size = 0;
-        for(cont = 0; cont < casos; cont++){
+        for(int cont = 0; cont < casos; cont++){
             cin >> aux;
             arv->vector[cont].requisicao = aux;
             cin >> aux;
@@ -111,9 +110,18 @@ int main(){
         }
         build_max_heap(arv);
         heapsort(arv);
-        for(){
-        
+        for(int cont = 0; cont < casos; cont++){
+            if(arv->vector[cont].requisicao < tempo_atual){//esta atrasado
+                atraso_total += tempo_atual - arv->vector[cont].requisicao;//atualiza o atraso
+                tempo_atual += arv->vector[cont].duracao;//atualiza o tempo
+            }else if(arv->vector[cont].requisicao == tempo_atual){//terminou na hora
+                tempo_atual += arv->vector[cont].duracao;//atualiza o tempo
+            }else{//terminou antes do outro comecar
+                tempo_atual = arv->vector[cont].requisicao +
+                        arv->vector[cont].duracao;//recebe o tempo mais a execucao
+                
+            }
         }
-        cout << tempo_atual << endl;
+        cout << atraso_total << endl;
     }
 }
