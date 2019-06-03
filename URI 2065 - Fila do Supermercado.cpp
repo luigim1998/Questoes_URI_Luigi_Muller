@@ -126,42 +126,18 @@ int main(){
     
     Heap * arv = build(n_funcionarios, tempo_atendimento, clientes);
     
-    heap_print(arv);
+    //heap_print(arv);
     build_min_heap(arv);//constroi a arvore
-    heap_print(arv);
+    //heap_print(arv);
     
     for(long long int cont = n_funcionarios + 1; cont <= n_clientes; cont++){
+        //acrescenta o tempo do proximo
         arv->vetor[1].tempo_de_proc += tempo_atendimento[arv->vetor[1].id]*clientes[cont];
         min_heapify(arv, 1);
-        heap_print(arv);
+        //heap_print(arv);
     }
     
-    cliente_da_fila = n_funcionarios + 1;//recebe o cliente atual da fila
-    
-    heap_print(arv);
-    
-    while(cliente_da_fila <= n_clientes){//enquanto houver cliente
-        build_min_heap(arv);//coloca o menor valor no topo
-        tempo_total += arv->vetor[1].tempo_de_proc;
-        /*heap_print(arv);
-        diminua_tempo(arv);//subtrai o tempo de todos o valores*/
-        heap_print(arv);
-        heapsort(arv);//organiza do maior para o menor
-        heap_print(arv);
-        //coloca os clientes na fila se houver tempo 0 e clientes
-        for(long long int cont = arv->lenght; cont > 0; cont--){
-            if(arv->vetor[cont].tempo_de_proc == 0 && cliente_da_fila <= n_clientes){
-                arv->vetor[cont].tempo_de_proc = tempo_atendimento[arv->vetor[cont].id]*clientes[cliente_da_fila++];
-                heap_print(arv);
-            } else {
-                break;
-            }
-        }
-    }
-    build_min_heap(arv);
-    heap_print(arv);
     heapsort(arv);
-    heap_print(arv);
-    tempo_total += arv->vetor[1].tempo_de_proc;//pega o maior tempo
-    printf("%lld\n", tempo_total);
+    //heap_print(arv);
+    printf("%lld\n", arv->vetor[1].tempo_de_proc);//imprime o maior tempo
 }

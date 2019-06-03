@@ -3,64 +3,65 @@
 #include <stdio.h>
 using namespace std;
 
-int *join(int *a, int *b){
-    int *c = new int[3];
-    c[0] = (a[0]<b[0] ? a[0] : b[0]);
-    c[1] = a[1] + b[1];
-    c[2] = (a[2]>b[2] ? a[2] : b[2]);
+typedef struct arv{
+    long long int menor;
+    long long int soma;
+    long long int maior;
+}Seg;
+
+Seg join(Seg a, Seg b){
+    Seg c;
+    c.menor = (a.menor < b.menor ? a.menor : b.menor);
+    c.soma = a.soma + b.soma;
+    c.maior = (a.maior > b.maior ? a.maior : b.maior);
     return c;
 }
 
-void build(int *input, int segtree[][3], int low, int high, int node){
+void build(long long int *input, Seg *segtree, long long int low, long long int high, long long int node){
     if(low + 1 == high){
-        segtree[node][0] = segtree[node][1] = segtree[node][2] = input[low];
+        segtree[node].maior = segtree[node].soma = segtree[node].menor = input[low];
         return;
     }
-    int mid = (low + high)/2;
+    long long int mid = (low + high)/2;
     build(input, segtree, low, mid, 2 * node);
     build(input, segtree, mid, high, 2 * node + 1);
-    int * c = join(segtree[2*node], segtree[2*node + 1]);
-    segtree[node][0] = c[0];
-    segtree[node][1] = c[1];
-    segtree[node][2] = c[2];
+    segtree[node] = join(segtree[2*node], segtree[2*node + 1]);
 }
 
-int *search(int segtree[][3], int qlow, int qhigh, int node, int low, int high){
+Seg search(Seg *segtree, long long int qlow, long long int qhigh, long long int node, long long int low, long long int high){
     if(qlow >= high || qhigh <= low){
-        int* a = new int[3];
-        a[0] = INT_MAX;
-        a[1] = 0;
-        a[2] = INT_MIN;
+        Seg a;
+        a.menor = LONG_LONG_MAX;
+        a.soma = 0;
+        a.maior = LONG_LONG_MIN;
         return a;
     }
     if(qlow <= low  && qhigh >= high)
         return segtree[node];
     
-    int mid = (low+high)/2;
+    long long int mid = (low+high)/2;
     return join(search(segtree, qlow, qhigh, 2*node, low, mid),
                 search(segtree, qlow, qhigh, 2*node+1, mid, high));
 }
 
 int main(){
-    int N, B;
-    long long int soma;
-    while(scanf("%d%d", &N, &B) != EOF){
-        int notas[N+1];
+    long long int N, B, soma;
+    while(scanf("%lld %lld", &N, &B) != EOF){
+        long long int * notas = new long long int[N+1];
         soma = 0;
         /*O vetor tera o menor, soma e maior valor respectivamente*/
-        int segtree[(N+1)*4][3];
-        for(int cont = 0; cont < N; cont++){
-            //int aux;
-            cin >> notas[cont];
-            /*scanf("%d", &aux);
-            notas[cont] = aux;*/
+        Seg *segtree = new Seg[(N + 1) * 4];
+        //recebe as notas
+        for(long long int cont = 0; cont < N; cont++){
+            scanf("%lld", &notas[cont]);
         }
         build(notas, segtree, 0, N, 1);
-        for(int cont = 0; cont < N-B+1; cont++){
-            int * c = search(segtree, cont, cont+B, 1, 0, N);
-            soma += c[1] - c[0] - c[2];
+        //soma as baterias
+        for(long long int cont = 0; cont < N-B+1; cont++){
+            Seg c = search(segtree, cont, cont+B, 1, 0, N);
+            soma += c.soma - c.maior - c.menor;
         }
-        cout << soma << endl;
+        printf("%lld\n", soma);
     }
     return 0;
 }
